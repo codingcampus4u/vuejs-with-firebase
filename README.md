@@ -5,7 +5,7 @@ Register Page
 ----------------------------------
 ![image](https://user-images.githubusercontent.com/77583617/122245900-bedd3c00-cee3-11eb-99fa-ed22f094f6ea.png)
 
-Verify Page
+Verify E-Mail Page
 ----------------------------------
 ![image](https://user-images.githubusercontent.com/77583617/122246490-34490c80-cee4-11eb-9283-e16c9160d0af.png)
 
