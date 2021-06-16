@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Login | Firebase Auth</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css"
+        integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.8/dist/sweetalert2.all.min.js"
+        integrity="sha256-MlrZ8a1LrI3zM5T1y+sdLnorLQup57yD+J/rZZTn1R0=" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <style>
+        #signup-form {
+            display: none;
+        }
+
+        #resetpwd-form {
+            display: none;
+        }
+
+        .logo{
+            display: flex;
+            justify-content: center;
+        }
+
+        .href{
+            color:darkblue;
+        }
+
+        .href:hover{
+            color:rgb(0, 74, 212);
+        }
+        .headfrm{
+            font-size: 16pt;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-main>
+                <v-container>
+                    <div class="text-center">
+                        <v-card class="mx-auto my-12" max-width="374">
+                            <v-col cols="12" sm="6" md="12" id="login-form">
+                                <div class="logo">
+                                    <v-img lazy-src="img/logo.png" max-height="100" max-width="200"
+                                    src="img/logo.png"></v-img>
+                                </div>
+                                <div class="text-left headfrm mt-4 ml-4">Sign in to your account</div>
+                                <v-form ref="loginform" v-model="valid" lazy-validation class="pa-4"
+                                    @submit.prevent="signin">
+                                    <v-text-field label="E-Mail ID" ref="email" :rules="emailRules"
+                                        placeholder="Enter Your E-Mail ID" outlined v-model="email"></v-text-field>
+                                    <v-text-field label="Password" ref="password" :rules="pwdrules"
+                                        placeholder="Enter Your Password" outlined v-model="password" type="password">
+                                    </v-text-field>
+                                    <v-btn type="submit" class="mb-4" color="primary" id="login_btn" dark large block>
+                                        Login <v-icon right dark>
+                                            mdi-login
+                                        </v-icon>
+                                    </v-btn>
+                                    <v-btn color="error" dark large block id="frgtpwd">
+                                        Forgot Password ?
+                                    </v-btn>
+                                </v-form>
+                                <v-divider class="mb-2"></v-divider>
+                                <p class="text-left caption text--secondary">
+                                    Don’t have an account with us?
+                                    <button class="float-right href" onclick="frmto()">
+                                        Create New Account
+                                    </button>
+                                </p>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="12" id="signup-form">
+                                <div class="logo">
+                                    <v-img lazy-src="img/logo.png" max-height="100" max-width="200"
+                                    src="img/logo.png"></v-img>
+                                </div>
+                                <div class="text-left headfrm mt-4 ml-4">Sign up to your account</div>
+                                <v-form ref="signupform" v-model="valid" lazy-validation class="pa-4"
+                                    @submit.prevent="signup">
+                                    <v-text-field label="E-Mail ID" ref="regemail" :rules="emailRules"
+                                        placeholder="Enter Your E-Mail ID" outlined v-model="regemail"></v-text-field>
+                                    <v-text-field label="Password" ref="regpwd" :rules="pwdrules"
+                                        placeholder="Enter Your Password" outlined v-model="regpwd" type="password">
+                                    </v-text-field>
+                                    <v-btn type="submit" class="mb-4" color="primary" dark large block>
+                                        Sign Up <v-icon right dark>
+                                            mdi-account-plus
+                                        </v-icon>
+                                    </v-btn>
+                                </v-form>
+                                <v-divider class="mb-2"></v-divider>
+                                <p class="text-left caption text--secondary">
+                                    Continue your existing Account
+                                    <button class="float-right href" onclick="frmto()">
+                                        Sign in
+                                    </button>
+                                </p>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="12" id="resetpwd-form">
+                                <div class="logo">
+                                    <v-img lazy-src="img/logo.png" max-height="100" max-width="200"
+                                    src="img/logo.png"></v-img>
+                                </div>
+                                <v-form ref="pwdresetform" v-model="valid" lazy-validation class="pa-4"
+                                    @submit.prevent="forgotpwd">
+                                    <v-text-field label="E-Mail ID" ref="emailrpwd" :rules="emailRules"
+                                        placeholder="Enter Your E-Mail ID" outlined v-model="emailrpwd"></v-text-field>
+                                    <v-btn type="submit" class="mb-4" color="success" dark large block>
+                                        Reset My Password
+                                    </v-btn>
+                                    <v-btn type="button" class="mb-4" id="backhome" light large block>
+                                        Back to Home
+                                    </v-btn>
+                                </v-form>
+                            </v-col>
+                        </v-card>
+                    </div>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-auth.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data() {
+                return {
+                    valid: true,
+                    email: '',
+                    password: '',
+                    regemail: '',
+                    regpwd: '',
+                    regconfpwd: '',
+                    emailrpwd: '',
+                    emailRules: [
+                        v => !!v || 'Field is required.',
+                        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+                    ],
+                    pwdrules: [
+                        v => !!v || 'Field is required.'
+                    ]
+                }
+            },
+            mounted: function () {
+                this.beforelogin() //Trigger Function On Load
+            },
+            methods: {
+                beforelogin() {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            window.location = 'verifyemail.html';
+                        }
+                    });
+                },
+                forgotpwd() {
+                    if (this.$refs.pwdresetform.validate()) {
+                        let respwdemail = this.$refs.emailrpwd.value;
+                        firebase.auth().sendPasswordResetEmail(respwdemail)
+                            .then((user) => {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'E-Mail Send Successfully',
+                                    text: 'Password Reset link Send to E-mail'
+                                })
+                            })
+                            .catch((error) => {
+                                var errorMessage = error.message;
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Oops... Something went wrong!',
+                                    text: errorMessage
+                                })
+                            });
+                    }
+                },
+                signin() {
+                    if (this.$refs.loginform.validate()) {
+                        let email = this.$refs.email.value;
+                        let pwd = this.$refs.password.value;
+                        firebase.auth().signInWithEmailAndPassword(email, pwd)
+                            .then((userCredential) => {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Sign In SuccessFully',
+                                    text: 'SuccessFully Logged Into Your Account'
+                                })
+                            })
+                            .catch((error) => {
+                                var errorMessage = error.message;
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Oops... Something went wrong!',
+                                    text: errorMessage
+                                })
+                            });
+                    }
+                },
+                signup() {
+                    if (this.$refs.signupform.validate()) {
+                        let email = this.$refs.regemail.value;
+                        let pwd = this.$refs.regpwd.value;
+                        firebase.auth().createUserWithEmailAndPassword(email, pwd)
+                            .then((userCredential) => {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Register SuccessFully',
+                                    text: 'SuccessFully Created Your Account'
+                                })
+                            })
+                            .catch((error) => {
+                                var errorMessage = error.message;
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Oops... Something went wrong!',
+                                    text: errorMessage
+                                })
+                            });
+                    }
+                }
+            }
+        })
+    </script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

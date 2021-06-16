@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Verify E-Mail | Firebase Auth</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css"
+        integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.8/dist/sweetalert2.all.min.js"
+        integrity="sha256-MlrZ8a1LrI3zM5T1y+sdLnorLQup57yD+J/rZZTn1R0=" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-main>
+                <v-container>
+                    <div class="text-center">
+                        <v-card class="mx-auto my-12" max-width="374">
+                            <v-col cols="12" sm="6" md="12">
+                                Hi! Dear,<p id="email_id"></p>
+                                <v-btn type="button" class="mb-4" color="primary" @click="verifyemail" dark large block>
+                                    Verify Your E-mail
+                                </v-btn>
+                                <v-footer>
+                                    Please Ensure, that Your E-mail Id is Valid. So Verify by click above button
+                                </v-footer>
+                            </v-col>
+                        </v-card>
+                    </div>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-auth.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            mounted: function () {
+                this.verifyuser() //method1 will execute at pageload
+            },
+            methods: {
+                verifyuser() {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (!user) {
+                            window.location = 'index.html';
+                        } else {
+                            const user = firebase.auth().currentUser;
+                            document.getElementById("email_id").innerHTML = user.email;
+                            if (user.emailVerified === false) {
+                                console.log('welcome');
+                            } else {
+                                window.location = 'Dashboard.html';
+                            }
+                        }
+                    });
+                },
+                verifyemail() {
+                    firebase.auth().currentUser.sendEmailVerification()
+                        .then(() => {
+                            const email = firebase.auth().currentUser.email;
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'E-Mail Send Successfully',
+                                text: 'Verification E-mail Send to ' + email + '',
+                            })
+                        });
+                }
+            }
+        })
+    </script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
